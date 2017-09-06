@@ -7,14 +7,17 @@ class Order extends React.Component{
     return orderKeys.map( key => {
           const fish = this.props.fishes[key];
           const amount = this.props.order[key];
+          const removeButton = <button onClick={ ()=>{ this.props.removeFromOrder(key) } }>&times;</button>;
+
           if(!fish || fish.status === 'unavailable'){
             return(
-              <li key={key}>Sorry {fish ? fish.name : 'fish'} is not longer available!</li>
+              <li key={key}>Sorry {fish ? fish.name : 'fish'} is not longer available! {removeButton}</li>
             )
           }
           return(
               <li key={key}>
                 <span>{amount}lbs {fish.name}</span>
+                {removeButton}
                 <span className="price">{formatPrice(amount * fish.price)}</span>
               </li>
           )
@@ -25,8 +28,7 @@ class Order extends React.Component{
     const total = orderKeys.reduce( (prevTotal, key)=> {
           const fish = this.props.fishes[key];
           const amount = this.props.order[key];
-
-          if(fish.status === 'available'){
+          if(fish && fish.status === 'available'){
             return prevTotal + (fish.price * amount);
           }else{
             return prevTotal;
@@ -47,7 +49,6 @@ class Order extends React.Component{
               <strong>Total: {this._calculateTotal(orderKeys)}</strong>
             </li>
           </ul>
-
         </div>
       )
   }

@@ -14,7 +14,6 @@ class AddFishForm extends React.Component{
       image: this.image.value
     }
 
-    console.log(fish);
     //TODO: Add validations and stuff
     this.props.addFish(fish);
     this.fishForm.reset();
@@ -30,7 +29,7 @@ class AddFishForm extends React.Component{
             <option value="available">Fresh</option>
             <option value="unavailable">Sold Out</option>
           </select>
-          <textarea type="text" placeholder="Fish desc" ref={ (input) => this.desc = input }></textarea>
+          <textarea placeholder="Fish desc" ref={ (input) => this.desc = input }></textarea>
           <input type="text" placeholder="Fish image" ref={ (input) => this.image = input }/>
           <button type="submit">+ Add Fish</button>
         </form>
