@@ -95,7 +95,7 @@ class App extends React.Component{
       return (
         <div className="catch-of-the-day">
           <div className="menu">
-            <Header tagline="fresh seafood market"/>
+            <Header tagline={'fresh seafood market'}/>
             <ul className="list-of-fishes">
               {this._renderFishes()}
             </ul>
@@ -113,6 +113,10 @@ class App extends React.Component{
         </div>
       )
   }
+}
+
+App.propTypes = {
+  params: React.PropTypes.object.isRequired
 }
 
 export default App;

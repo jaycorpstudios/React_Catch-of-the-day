@@ -1,7 +1,7 @@
 import React from 'react';
 
 // This is a good example of a Stateless Functional Component.
-const NotFound = (props) => {
+const NotFound = () => {
   return (
     <header className="top">
       <h1>Not Found</h1>
