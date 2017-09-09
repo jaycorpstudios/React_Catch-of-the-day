@@ -1,7 +1,77 @@
 import React from 'react';
 import AddFishForm from './AddFishForm';
+import base from '../firebaseDB'
 
 class Inventory extends React.Component{
+
+  constructor(){
+    super();
+    this._authenticate = this._authenticate.bind(this);
+    this._authHandler = this._authHandler.bind(this);
+    this.state = {
+      uid: null,
+      owner: null
+    }
+  }
+
+  componentDidMount() {
+    base.onAuth( (user)=> {
+      if(user){
+        this._authHandler(null , { user });
+      }
+    });
+  }
+
+_renderLogin(){
+  return(
+    <nav className="login">
+      <p>Sign in to manage your store's inventory</p>
+      <button
+        className="facebook"
+        onClick={ ()=>{ this._authenticate('facebook') } }>
+        Log in with Facebook
+      </button>
+      <button
+        className="twitter"
+        onClick={ ()=>{ this._authenticate('twitter') } }>
+        Log in with Twitter
+      </button>
+    </nav>
+  )
+}
+
+_authenticate(provider){
+  base.authWithOAuthPopup(provider, this._authHandler);
+}
+
+_logout(){
+  base.unauth();
+  this.setState({ uid: null });
+}
+
+_authHandler(err, authData){
+  //TODO: add handler for errors
+  if(err){
+    return;
+  }
+
+  //Grab Store info
+  const storeRef = base.database().ref(this.props.storeId);
+  
+  //Query the firebase once for the store data
+  storeRef.once('value', (snapshop)=>{
+    const data = snapshop.val() || {};
+    //Clam it as own if there is no owner already
+    if(!data.owner){
+      storeRef.set({ owner: authData.user.uid });
+    }
+    this.setState({
+      uid: authData.user.uid,
+      owner: data.owner || authData.user.uid
+    })
+  });
+}
+
 
 _handleUpdate(e, key){
   const updatedFish = {...this.props.fishes[key], [e.target.name]: e.target.value };
@@ -29,19 +99,37 @@ _renderFishesInventory(keys){
 
   render(){
     const keys = Object.keys(this.props.fishes);
+    const logoutBtn = (<button onClick={this._logout.bind(this)}>Log Out</button>)
+    //Check for logged user
+    if(!this.state.uid){
+      return (
+        <div>{ this._renderLogin() }</div>
+      )
+    }
+    //Check is users is the owner
+    if(this.state.uid !== this.state.owner){
       return (
         <div>
-          <h1>Inventory</h1>
-          {this._renderFishesInventory(keys)}
-          <AddFishForm addFish={this.props.addFish}/>
-          <button onClick={this.props.loadFishSamples}>Add sample fishes</button>
+          <p>Sorry you aren't the owner of this store.</p>
+          <div>{logoutBtn}</div>
         </div>
       )
+    }
+    return (
+      <div>
+        <h1>Inventory</h1>
+        <div>{logoutBtn}</div>
+        {this._renderFishesInventory(keys)}
+        <AddFishForm addFish={this.props.addFish}/>
+        <button onClick={this.props.loadFishSamples}>Add sample fishes</button>
+      </div>
+    )
   }
 }
 
 Inventory.propTypes = {
   fishes: React.PropTypes.object.isRequired,
+  storeId: React.PropTypes.string.isRequired,
   updateFish: React.PropTypes.func.isRequired,
   deleteFish: React.PropTypes.func.isRequired,
   loadFishSamples: React.PropTypes.func.isRequired
