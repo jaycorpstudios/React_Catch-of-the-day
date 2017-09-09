@@ -109,7 +109,8 @@ class App extends React.Component{
           addFish={ this._addFish.bind(this) }
           loadFishSamples={ this._loadFishSamples.bind(this) }
           updateFish={ this._updateFish.bind(this) }
-          deleteFish={ this._deleteFish.bind(this) }/>
+          deleteFish={ this._deleteFish.bind(this) }
+          storeId={ this.props.params.storeId }/>
         </div>
       )
   }
