@@ -25,7 +25,7 @@ class Inventory extends React.Component{
 _renderLogin(){
   return(
     <nav className="login">
-      <p>Sign in to manage your store's inventory</p>
+      <p>Sign in to manage your inventory</p>
       <button
         className="facebook"
         onClick={ ()=>{ this._authenticate('facebook') } }>
@@ -110,7 +110,7 @@ _renderFishesInventory(keys){
     if(this.state.uid !== this.state.owner){
       return (
         <div>
-          <p>Sorry you aren't the owner of this store.</p>
+          <p>Sorry you are not the owner of this store.</p>
           <div>{logoutBtn}</div>
         </div>
       )
